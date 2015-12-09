@@ -17,6 +17,7 @@ use \PatternLab\Config;
 use \PatternLab\Data;
 use \PatternLab\Dispatcher;
 use \PatternLab\Parsers\Documentation;
+use \PatternLab\PatternData\Exporters\LookupPartialsExporter;
 use \PatternLab\PatternData\Exporters\NavItemsExporter;
 use \PatternLab\PatternData\Exporters\PatternPartialsExporter;
 use \PatternLab\PatternData\Exporters\PatternPathDestsExporter;
@@ -197,6 +198,12 @@ class Builder {
 		
 		// write out the data
 		file_put_contents($dataDir."/patternlab-data.js",$output);
+
+		// Load and write out the items for the partials lookup
+		$lpExporter = new LookupPartialsExporter();
+		$lookup = $lpExporter->run();
+		$lookupData = "module.exports = { lookup: " . json_encode($lookup) . "};";
+		file_put_contents($dataDir."/patternLabPartials.js",$lookupData);
 		
 		// note the end of the operation
 		$dispatcherInstance->dispatch("builder.generateIndexEnd");
